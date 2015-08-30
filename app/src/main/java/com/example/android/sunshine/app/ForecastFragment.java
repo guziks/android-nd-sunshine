@@ -16,9 +16,11 @@
 package com.example.android.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -35,11 +37,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.android.sunshine.app.data.WeatherContract;
+import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
 
 /**
  * Encapsulates fetching the forecast and displaying it as a {@link ListView} layout.
  */
-public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ForecastFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<Cursor>,
+                   SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private ForecastAdapter mForecastAdapter;
 
@@ -82,6 +87,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     static final int COL_COORD_LAT = 7;
     static final int COL_COORD_LONG = 8;
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_location_status_key))) {
+            updateEmptyView();
+        }
+    }
+
     /**
      * A callback interface that all activities containing this fragment must
      * implement. This mechanism allows activities to be notified of item
@@ -102,6 +114,20 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         super.onCreate(savedInstanceState);
         // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -271,13 +297,24 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     private void updateEmptyView() {
         if (mForecastAdapter.getCount() == 0) {
-            if (!Utility.isNetworkAvailable(getActivity())) {
-                TextView empty = (TextView) getView().findViewById(R.id.forecast_empty_view);
-                if (empty != null) {
-                    empty.setText(empty.getText()
-                            + getActivity().getString(R.string.empty_text_separator)
-                            + getActivity().getString(R.string.forecast_empty_text_no_connection));
+            TextView empty = (TextView) getView().findViewById(R.id.forecast_empty_view);
+            if (empty != null) {
+                @SunshineSyncAdapter.LocationStatus int locationStatus;
+                locationStatus = Utility.getLocationStatus(getActivity());
+                int newTextRes = R.string.empty_forecast_list;
+                switch (locationStatus) {
+                    case SunshineSyncAdapter.LOCATION_STATUS_SERVER_DOWN:
+                        newTextRes = R.string.empty_forecast_list_server_down;
+                        break;
+                    case SunshineSyncAdapter.LOCATION_STATUS_SERVER_INVALID:
+                        newTextRes = R.string.empty_forecast_list_server_error;
+                        break;
+                    default:
+                        if (!Utility.isNetworkAvailable(getActivity())) {
+                            newTextRes = R.string.empty_forecast_list_no_network;
+                        }
                 }
+                empty.setText(newTextRes);
             }
         }
     }

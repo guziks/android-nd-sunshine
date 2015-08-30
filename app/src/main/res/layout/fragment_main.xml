@@ -33,5 +33,5 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:padding="@dimen/activity_horizontal_margin"
-        android:text="@string/forecast_empty_text" />
+        android:text="@string/empty_forecast_list" />
 </FrameLayout>
