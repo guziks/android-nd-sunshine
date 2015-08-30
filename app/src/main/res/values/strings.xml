@@ -114,4 +114,6 @@
     <string name="forecast_empty_text">No weather information available</string>
     <string name="forecast_empty_text_no_connection">The network is not available to fetch weather data</string>
 
+    <!--Shared preferences location status key-->
+    <string name="pref_location_status_key" translate="false">location_status</string>
 </resources>
