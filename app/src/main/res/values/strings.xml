@@ -77,8 +77,16 @@
     <!-- Value in SharedPreferences for imperial temperature unit option [CHAR LIMIT=NONE] -->
     <string name="pref_units_imperial" translatable="false">imperial</string>
 
+    <string name="pref_icon_pack_key" translatable="false">icon_pack</string>
+    <string name="pref_icon_pack_label">Icon Pack</string>
+    <string name="pref_icon_pack_label_colored" translatable="false">Colored</string>
+    <string name="pref_icon_pack_label_mono" translatable="false">Mono</string>
+    <string name="pref_icon_pack_colored" translatable="false">Colored</string>
+    <string name="pref_icon_pack_mono" translatable="false">Mono</string>
+
     <!-- Format for retrieving art from an external source [CHAR LIMIT=NONE] -->
-    <string name="format_art_url" translatable="false">https://raw.githubusercontent.com/udacity/Sunshine-Version-2/sunshine_master/app/src/main/res/drawable-xxhdpi/art_<xliff:g id="description">%s</xliff:g>.png</string>
+    <!--<string name="format_art_url" translatable="false">https://raw.githubusercontent.com/udacity/Sunshine-Version-2/sunshine_master/app/src/main/res/drawable-xxhdpi/art_<xliff:g id="description">%s</xliff:g>.png</string>-->
+    <string name="format_art_url" translatable="false">https://raw.githubusercontent.com/udacity/sunshine_icons/master/Archive/<xliff:g id="icon_pack">%s</xliff:g>/art_<xliff:g id="description">%s</xliff:g>.png</string>
 
     <!-- Language-specific constants -->
     <string name="today">Today</string>
